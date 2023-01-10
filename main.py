@@ -6,21 +6,23 @@ movies_data = pd.read_csv('final.csv')
 app = Flask(__name__)
 
 # extraer información importante de dataframe
-all_movies = movies_data[["origial_title","poster_link", "release_date", "runtime", "weighted_rating"]]
+all_movies = movies_data[["original_title","poster_link","release_date","runtime","weighted_rating"]]
+
 
 # variables para almacenar información
 liked_movies = []
 not_liked_movies = []
 did_not_watch = []
 
+
 # método para obtener información de la base de datos
 def assign_val():
-    m_data={
-        "origial_title": all_movies.iloc[0,0],
+    m_data = {
+        "original_title": all_movies.iloc[0,0],
         "poster_link": all_movies.iloc[0,1],
         "release_date": all_movies.iloc[0,2] or "N/A",
         "duration": all_movies.iloc[0,3],
-        "rating": all_movies.iloc[0,4]/2
+        "rating":all_movies.iloc[0,4]/2
     }
     return m_data
 
@@ -33,27 +35,46 @@ def get_movie():
         "data": movie_data,
         "status": "success"
     })
-
 # /like api
-@app.route("/like", methods = ["POST"])
+@app.route("/like")
 def liked_movie():
     global all_movies
-    movie_data = assign_val()
+    movie_data=assign_val()
     liked_movies.append(movie_data)
-    all_movies.drop([0],inplace=True)
-    all_movies=all_movies.reset_index(drop=True)
-
+    all_movies.drop([0], inplace=True)
+    all_movies = all_movies.reset_index(drop=True)
     return jsonify({
         "status": "success"
     })
 
 # /dislike api
-@app.route("/dislike", methods = ["POST"])
+
+@app.route("/dislike")
 def unliked_movie():
+    global all_movies
+
+    movie_data=assign_val()
+    not_liked_movies.append(movie_data)
+    all_movies.drop([0], inplace=True)
+    all_movies=all_movies.reset_index(drop=True)
     
+    return jsonify({
+        "status": "success"
+    })
 # /did_not_watch api
-@app.route("/did_not_watch", methods = ["POST"])
+
+@app.route("/did_not_watch")
 def did_not_watch_view():
+    global all_movies
+
+    movie_data=assign_val()
+    did_not_watch.append(movie_data)
+    all_movies.drop([0], inplace=True)
+    all_movies=all_movies.reset_index(drop=True)
+    
+    return jsonify({
+        "status": "success"
+    })
 
 
 if __name__ == "__main__":
